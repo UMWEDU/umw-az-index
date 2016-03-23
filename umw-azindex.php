@@ -11,7 +11,7 @@ Tested up to: 4.5
 */
 
 if( !class_exists( 'UMWAZIndexWidget' ) ) {
-        require_once( dirname( __FILE__ ) . '/classes/umw-azindex-widget.php' );
+        require_once( dirname( __FILE__ ) . '/classes/class-umw-azindex-widget.php' );
 }
 add_action( 'widgets_init', create_function( '', 'return register_widget( "UMWAZIndexWidget" );' ) );
 
@@ -22,68 +22,68 @@ add_shortcode( 'umw_azindex', 'umw_azindex' );
 add_shortcode( 'aznav', 'umw_aznav' );
 add_shortcode( 'umw_aznav', 'umw_aznav' );
 
-	/**
-        *Display A to Z Index
-        *
-        *@return string
-        *@since 1.0
-        */
-	function umw_azindex ( $args = array() ) {
-		global $wpdb, $blog_id;
-		
-		if( isset( $GLOBALS['post'] ) && is_object( $GLOBALS['post'] ) )
-			$current_post_id = $GLOBALS['post']->ID;
-		else
-			$current_post_id = 0;
+/**
+ *Display A to Z Index
+ *
+ *@return string
+ *@since 1.0
+ */
+function umw_azindex ( $args = array() ) {
+	global $wpdb, $blog_id;
+	
+	if( isset( $GLOBALS['post'] ) && is_object( $GLOBALS['post'] ) )
+		$current_post_id = $GLOBALS['post']->ID;
+	else
+		$current_post_id = 0;
 
-		$post_type = $args['post_type'];
-		if( ! @strlen( $post_type ) ) {
-			$post_type = 'post,page';
-		}
-		$show_excerpt = $args['excerpt'];
-		if( ! @strlen( $show_excerpt ) ) {
-                        $show_excerpt = 'true';
-                }
-		$frags = explode( ',', $post_type );
-		$tmp = array();
-		foreach( $frags as $frag ) {
-			$tmp[] = "'" . $wpdb->escape( $frag ) . "'";
-		}
-		$post_type = implode( ',', $tmp );
-		unset( $frags, $tmp );
+	$post_type = $args['post_type'];
+	if( ! @strlen( $post_type ) ) {
+		$post_type = 'post,page';
+	}
+	$show_excerpt = $args['excerpt'];
+	if( ! @strlen( $show_excerpt ) ) {
+					$show_excerpt = 'true';
+			}
+	$frags = explode( ',', $post_type );
+	$tmp = array();
+	foreach( $frags as $frag ) {
+		$tmp[] = "'" . $wpdb->escape( $frag ) . "'";
+	}
+	$post_type = implode( ',', $tmp );
+	unset( $frags, $tmp );
 
-		// only allow letters to be sent via get string
+	// only allow letters to be sent via get string
 
-		$letter = clean_letter( $_GET['letter'] );
-		$sql = $wpdb->prepare( "SELECT ID, post_title, post_type, post_excerpt, post_content, post_date FROM {$wpdb->posts} WHERE post_status=%s AND post_type IN (" . $post_type . ") AND post_title LIKE %s AND ID != %d ORDER BY post_title", 'publish', $letter . '%', $current_post_id );
-                /*$sql = "SELECT p.ID AS post_id, p.post_title, p.post_type, p.post_excerpt, p.post_content, p.post_date FROM " . $wpdb->posts . " AS p
-                        WHERE p.post_status='publish' AND p.post_type IN(" . $post_type . ")
-			AND p.post_title LIKE '${letter}%'
-                        ORDER BY p.post_title";*/
-		$post_results = $wpdb->get_results( $sql, ARRAY_A );
+	$letter = clean_letter( $_GET['letter'] );
+	$sql = $wpdb->prepare( "SELECT ID, post_title, post_type, post_excerpt, post_content, post_date FROM {$wpdb->posts} WHERE post_status=%s AND post_type IN (" . $post_type . ") AND post_title LIKE %s AND ID != %d ORDER BY post_title", 'publish', $letter . '%', $current_post_id );
+			/*$sql = "SELECT p.ID AS post_id, p.post_title, p.post_type, p.post_excerpt, p.post_content, p.post_date FROM " . $wpdb->posts . " AS p
+					WHERE p.post_status='publish' AND p.post_type IN(" . $post_type . ")
+		AND p.post_title LIKE '${letter}%'
+					ORDER BY p.post_title";*/
+	$post_results = $wpdb->get_results( $sql, ARRAY_A );
 ?>
 <?php if ( count( $post_results ) ): ?>
-		<ul>
+	<ul>
 <?php foreach ( $post_results as $post_result ) : ?>
-			<li>
+		<li>
 <?php
-	$title = get_the_title( $post_result['ID'] );
-	$link = get_permalink( $post_result['ID'] );
-	$excerpt = empty( $post_result['post_excerpt'] ) ? umw_truncate_excerpt( $post_result['post_content'], 100 ) : $post_result['post_excerpt'];
-	$excerpt = apply_filters( 'the_excerpt', $excerpt, $post_result['ID'] );
+$title = get_the_title( $post_result['ID'] );
+$link = get_permalink( $post_result['ID'] );
+$excerpt = empty( $post_result['post_excerpt'] ) ? umw_truncate_excerpt( $post_result['post_content'], 100 ) : $post_result['post_excerpt'];
+$excerpt = apply_filters( 'the_excerpt', $excerpt, $post_result['ID'] );
 ?>
 
-				<h2><a href="<?php echo $link; ?>"><?php echo $title; ?></a></h2>
-				<p><span class="date"><?php echo mysql2date( get_option( 'date_format' ), $post_result['post_date'] ); ?></span></p>
+			<h2><a href="<?php echo $link; ?>"><?php echo $title; ?></a></h2>
+			<p><span class="date"><?php echo mysql2date( get_option( 'date_format' ), $post_result['post_date'] ); ?></span></p>
 <?php if ( @strlen( $excerpt ) && $show_excerpt == 'true' ): ?>
-				<div class="post-excerpt"><?php echo $excerpt; ?></div>
+			<div class="post-excerpt"><?php echo $excerpt; ?></div>
 <?php endif; ?>
-			</li>
+		</li>
 
 <?php endforeach; ?>
-		</ul>
+	</ul>
 <?php else: ?>
-		<p>No posts or pages found.</p>
+	<p>No posts or pages found.</p>
 <?php endif; ?>
 <?php
 }
