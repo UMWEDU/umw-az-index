@@ -36,7 +36,7 @@ class UMWAZIndexWidget extends WP_Widget {
         *@since 1.0
         */
 	function content ( $instance ) {
-		umw_aznav( $instance );
+		return umw_aznav( $instance );
 	}
 	
 	/**
