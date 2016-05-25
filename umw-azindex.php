@@ -42,8 +42,8 @@ function umw_azindex ( $args = array() ) {
 	}
 	$show_excerpt = $args['excerpt'];
 	if( ! @strlen( $show_excerpt ) ) {
-					$show_excerpt = 'true';
-			}
+		$show_excerpt = 'true';
+	}
 	$frags = explode( ',', $post_type );
 	$tmp = array();
 	foreach( $frags as $frag ) {
