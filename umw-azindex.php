@@ -61,9 +61,11 @@ function umw_azindex ( $args = array() ) {
 		AND p.post_title LIKE '${letter}%'
 					ORDER BY p.post_title";*/
 	$post_results = $wpdb->get_results( $sql, ARRAY_A );
+	
+	ob_start();
 ?>
 <?php if ( count( $post_results ) ): ?>
-	<ul>
+	<ul class="az-index-entry-list">
 <?php foreach ( $post_results as $post_result ) : ?>
 		<li>
 <?php
@@ -86,6 +88,7 @@ $excerpt = apply_filters( 'the_excerpt', $excerpt, $post_result['ID'] );
 	<p>No posts or pages found.</p>
 <?php endif; ?>
 <?php
+	return ob_get_clean();
 }
 
 function umw_truncate_excerpt( $content, $len ) {
@@ -107,7 +110,8 @@ function clean_letter ( $letter ) {
 }
 
 function umw_aznav ( $instance ) {
-                $letter = clean_letter( $_GET['letter'] );
+	$letter = clean_letter( $_GET['letter'] );
+	ob_start();
 ?>
                 <ul class="umw-az-index">
 <?php foreach ( range( 'A', 'Z') as $i ): ?>
@@ -115,5 +119,6 @@ function umw_aznav ( $instance ) {
 <?php endforeach; ?>
                 </ul>
 <?php
+	return ob_get_clean();
 }
 
